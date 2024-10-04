@@ -1,17 +1,17 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return "Simple Calculator"
+    return render_template('index.html')
 
-@app.route('/calc', methods=['GET'])
+@app.route('/calc', methods=['POST'])
 def calc():
     try:
-        operation = request.args.get('operation')
-        x = float(request.args.get('x'))
-        y = float(request.args.get('y'))
+        operation = request.form['operation']
+        x = float(request.form['x'])
+        y = float(request.form['y'])
 
         if operation == 'add':
             result = x + y
@@ -22,11 +22,11 @@ def calc():
         elif operation == 'divide':
             result = x / y
         else:
-            return jsonify({"error": "Invalid operation"}), 400
+            return render_template('index.html', result="Invalid operation")
 
-        return jsonify({"result": result})
+        return render_template('index.html', result=f"Result: {result}")
     except (TypeError, ValueError):
-        return jsonify({"error": "Invalid input"}), 400
+        return render_template('index.html', result="Invalid input")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
